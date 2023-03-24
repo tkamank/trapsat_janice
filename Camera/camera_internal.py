@@ -17,8 +17,15 @@ import serial
 
 class Internal_Camera:
     camera = None
-    IMAGE_FILE = '/home/hab/Desktop/Janus/image2.jpg'
+    IMAGE_FILE = ''
+    IMAGE_FILE_PREFIX = '/home/hab/Desktop/Janus/image'
+    IMAGE_EXTENSION = '.jpg'
     image_no = 0
+
+    def update_image_file(self):
+        self.IMAGE_FILE = self.IMAGE_FILE_PREFIX + str(self.image_no) + self.IMAGE_EXTENSION
+        print(self.IMAGE_FILE)
+        self.image_no += 1
     
     def __init__(self):
         uart = serial.Serial("/dev/ttyS0", baudrate=115200, timeout=0.25)
@@ -35,9 +42,15 @@ class Internal_Camera:
         elif size == adafruit_vc0706.IMAGE_SIZE_160x120:
             print("Using 160x120 size image.")
 
+    def reset(self):
+        print("Error capturing image, retaking picture")
+        time.sleep(3)
+        self.take_picture()
+
     def take_picture(self):
+        self.update_image_file()
         if not self.camera.take_picture():
-            raise RuntimeError("Failed to take picture!")
+            self.reset()
         # Print size of picture in bytes.
         frame_length = self.camera.frame_length
         print("Picture size (bytes): {}".format(frame_length))
@@ -45,7 +58,7 @@ class Internal_Camera:
         # Open a file for writing (overwriting it if necessary).
         # This will write 50 bytes at a time using a small buffer.
         # You MUST keep the buffer size under 100!
-        print("Writing image: {}".format(self.IMAGE_FILE), end="", flush=True)
+        #print("Writing image: {}".format(self.IMAGE_FILE), end="", flush=True)
         stamp = time.monotonic()
         # Pylint doesn't like the wcount variable being lowercase, but uppercase makes less sense
         # pylint: disable=invalid-name
@@ -60,14 +73,14 @@ class Internal_Camera:
                 copy_buffer = bytearray(to_read)
                 # Read picture data into the copy buffer.
                 if self.camera.read_picture_into(copy_buffer) == 0:
-                    raise RuntimeError("Failed to read picture frame data!")
+                    self.reset()
                 # Write the data to SD card file and decrement remaining bytes.
                 outfile.write(copy_buffer)
                 frame_length -= 32
                 # Print a dot every 2k bytes to show progress.
                 wcount += 1
                 if wcount >= 64:
-                    print(".", end="", flush=True)
+                    #print(".", end="", flush=True)
                     wcount = 0
         print()
         # pylint: enable=invalid-name
