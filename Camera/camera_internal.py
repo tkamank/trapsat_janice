@@ -18,7 +18,7 @@ import serial
 class Internal_Camera:
     camera = None
     IMAGE_FILE = ''
-    IMAGE_FILE_PREFIX = '/home/hab/Desktop/Janus/image'
+    IMAGE_FILE_PREFIX = '/home/trapsat/Desktop/Janus_Photos/image'
     IMAGE_EXTENSION = '.jpg'
     image_no = 0
 

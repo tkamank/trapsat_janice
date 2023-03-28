@@ -20,7 +20,7 @@ import adafruit_vc0706
 # USB to serial adapter configuration:
 # IMAGE_FILE = 'image.jpg'  # Full path to file name to save captured image. Will overwrite!
 # Raspberry Pi configuration:
-IMAGE_FILE = '/home/hab/Desktop/Janus/image2.jpg'  # Update Path to location where image should be stored
+IMAGE_FILE = '/home/trapsat/Desktop/image2.jpg'  # Update Path to location where image should be stored
 
 
 # Create a serial connection for the VC0706 connection.

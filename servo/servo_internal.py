@@ -7,24 +7,21 @@
 
 import RPi.GPIO as GPIO
 from time import sleep
+import pigpio
 
 #USES BCM DUE TO CAMERA MODULE
 class Internal_Servo:
     pwm = None
+    servo = 17
     def __init__(self):
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(17, GPIO.OUT)
-        self.pwm=GPIO.PWM(17, 50)
-        self.pwm.start(0)
+        self.pwm=pigpio.pi()
+        self.pwm.set_mode(self.servo, pigpio.OUTPUT)
 
-    def setAngle(self,angle):
-        duty = angle / 18 + 2
-        GPIO.output(17, True)
-        self.pwm.ChangeDutyCycle(duty)
-        sleep(1)
-        GPIO.output(17, False)
-        self.pwm.ChangeDutyCycle(duty)
+    def setAngle(self,pulsewidth):
+        self.pwm.set_servo_pulsewidth(self.servo, pulsewidth)
+        sleep(3)
+
 
     def close(self):
-        self.pwm.stop()
-        GPIO.cleanup()
+        self.pwm.set_PWM_dutycycle(self.servo, 0)
+        self.pwm.set_PWM_dutycycle(self.servo, 0)
