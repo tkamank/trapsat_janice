@@ -10,10 +10,13 @@ You must wire up the VC0706 to a USB or hardware serial port.
 Primarily for use with Linux/Raspberry Pi but also can work with Mac/Windows"""
 
 import time
+from datetime import datetime
 import busio
 import board
 import adafruit_vc0706
 import serial
+
+#In update_image_file str(self.image_no) is replaced with current timestamp
 
 class Internal_Camera:
     camera = None
@@ -23,7 +26,7 @@ class Internal_Camera:
     image_no = 0
 
     def update_image_file(self):
-        self.IMAGE_FILE = self.IMAGE_FILE_PREFIX + str(self.image_no) + self.IMAGE_EXTENSION
+        self.IMAGE_FILE = self.IMAGE_FILE_PREFIX + datetime.now().strftime('%Y-%m-%d-%H:%M:%S') + self.IMAGE_EXTENSION
         print(self.IMAGE_FILE)
         self.image_no += 1
     
