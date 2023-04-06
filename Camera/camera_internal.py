@@ -10,25 +10,23 @@ You must wire up the VC0706 to a USB or hardware serial port.
 Primarily for use with Linux/Raspberry Pi but also can work with Mac/Windows"""
 
 import time
-from datetime import datetime
 import busio
 import board
+from datetime import datetime;
 import adafruit_vc0706
 import serial
-
-#In update_image_file str(self.image_no) is replaced with current timestamp
 
 class Internal_Camera:
     camera = None
     IMAGE_FILE = ''
     IMAGE_FILE_PREFIX = '/home/trapsat/Desktop/Janus_Photos/image'
-    IMAGE_EXTENSION = '.jpg'
+    IMAGE_EXTENSION = '.jpg'  
     image_no = 0
 
     def update_image_file(self):
         self.IMAGE_FILE = self.IMAGE_FILE_PREFIX + datetime.now().strftime('%Y-%m-%d-%H:%M:%S') + self.IMAGE_EXTENSION
         print(self.IMAGE_FILE)
-        self.image_no += 1
+        #self.image_no += 1
     
     def __init__(self):
         uart = serial.Serial("/dev/ttyS0", baudrate=115200, timeout=0.25)
@@ -53,7 +51,8 @@ class Internal_Camera:
     def take_picture(self):
         self.update_image_file()
         if not self.camera.take_picture():
-            self.reset()
+            print("Camera Internal Error: Could not take picture.")
+            return
         # Print size of picture in bytes.
         frame_length = self.camera.frame_length
         print("Picture size (bytes): {}".format(frame_length))
@@ -76,7 +75,8 @@ class Internal_Camera:
                 copy_buffer = bytearray(to_read)
                 # Read picture data into the copy buffer.
                 if self.camera.read_picture_into(copy_buffer) == 0:
-                    self.reset()
+                    print("Camera Internal Error: Could not take picture.")
+                    return
                 # Write the data to SD card file and decrement remaining bytes.
                 outfile.write(copy_buffer)
                 frame_length -= 32
